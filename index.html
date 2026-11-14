@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uma cartinha pra você 💌</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffd7df">
+<meta property="og:title" content="Tenho uma pergunta pra você 💌">
+<meta property="og:description" content="Abre aí, é rapidinho.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,500;1,600&display=swap" rel="stylesheet">
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO — é só mexer aqui
+   ============================================================ */
+const CONFIG = {
+  nomeDela: "Thaynara",
+
+  // Seu nome (opcional). Se preencher, aparece na assinatura da carta.
+  seuNome: "",
+
+  // Seu WhatsApp com código do país + DDD, só números. Ex.: "5511999998888"
+  // Se deixar vazio, ela escolhe o contato na hora de enviar a resposta.
+  whatsapp: "",
+
+  // Horários sugeridos (ela também pode digitar outro)
+  horarios: ["12:00", "15:00", "17:00", "18:30", "19:00", "19:30", "20:00", "21:00"],
+};
+</script>
+
+<style>
+  :root {
+    --vinho: #7a1f3d;
+    --vinho-escuro: #5a1530;
+    --rosa: #e0527a;
+    --rosa-forte: #d13a68;
+    --rosa-claro: #ffd9e2;
+    --rosa-nevoa: #fff0f3;
+    --creme: #fffaf6;
+    --tinta: #4a2331;
+    --tinta-suave: #8a5a6b;
+    --dourado: #c08a4e;
+    --sombra: 122, 31, 61;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { margin: 0; min-height: 100%; }
+
+  body {
+    font-family: "Nunito", system-ui, sans-serif;
+    color: var(--tinta);
+    background: #ffd7df;
+    overflow-x: hidden;
+  }
+
+  /* Fundo fixo (gradiente + corações subindo) */
+  .ceu {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    background:
+      radial-gradient(60% 45% at 85% 10%, rgba(255,255,255,.75) 0%, transparent 70%),
+      radial-gradient(50% 40% at 10% 90%, rgba(255,196,170,.45) 0%, transparent 70%),
+      linear-gradient(170deg, #fff3f1 0%, #ffd7df 48%, #f4a9bf 100%);
+  }
+  .flutua {
+    position: absolute; bottom: -60px;
+    animation: subir linear infinite;
+    will-change: transform;
+  }
+  .flutua svg { display: block; animation: balanco ease-in-out infinite alternate; }
+  @keyframes subir {
+    from { transform: translateY(0) rotate(0deg); }
+    to   { transform: translateY(calc(-100vh - 140px)) rotate(25deg); }
+  }
+  @keyframes balanco {
+    from { transform: translateX(-14px); }
+    to   { transform: translateX(14px); }
+  }
+
+  /* Telas */
+  .tela {
+    position: relative; z-index: 1;
+    display: none;
+    min-height: 100vh; min-height: 100dvh;
+    padding: 28px 16px calc(28px + env(safe-area-inset-bottom));
+    place-items: center;
+  }
+  .tela.ativa { display: grid; }
+  .tela.ativa > * { animation: surgir .7s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes surgir {
+    from { opacity: 0; transform: translateY(22px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .cartao {
+    width: 100%; max-width: 440px;
+    background: rgba(255, 250, 246, .93);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    border-radius: 30px;
+    padding: 38px 26px 30px;
+    text-align: center;
+    box-shadow:
+      0 34px 70px -24px rgba(var(--sombra), .42),
+      0 2px 0 rgba(255,255,255,.8) inset;
+  }
+
+  .sobrescrito {
+    margin: 0 0 14px;
+    font-size: .82rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--dourado);
+  }
+  .nome {
+    display: block;
+    font-family: "Great Vibes", cursive; font-weight: 400;
+    font-size: clamp(3.4rem, 17vw, 4.8rem); line-height: 1;
+    color: var(--rosa-forte);
+    margin-bottom: 6px;
+  }
+  h1, h2 {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif; font-style: italic; font-weight: 500;
+    color: var(--vinho);
+    text-wrap: balance;
+  }
+  h1 { font-size: clamp(1.7rem, 7.4vw, 2.2rem); line-height: 1.2; }
+  h2 { font-size: clamp(1.5rem, 6.4vw, 1.9rem); line-height: 1.25; }
+  p { line-height: 1.55; }
+  .apoio { margin: 12px 0 0; color: var(--tinta-suave); font-size: 1rem; }
+
+  /* ---------- Tela 1: envelope ---------- */
+  .abertura { display: grid; justify-items: center; gap: 26px; text-align: center; }
+  .abertura .para {
+    margin: 0; font-family: "Playfair Display", serif; font-style: italic;
+    font-size: 1.15rem; color: var(--vinho);
+  }
+  .abertura .nome { margin: 2px 0 0; }
+
+  .envelope {
+    position: relative;
+    width: min(300px, 78vw); aspect-ratio: 3 / 2;
+    margin-top: 70px;
+    border: 0; padding: 0; background: none; cursor: pointer;
+    perspective: 900px;
+    filter: drop-shadow(0 20px 26px rgba(var(--sombra), .32));
+    animation: boiar 3.2s ease-in-out infinite alternate;
+  }
+  .envelope:focus-visible { outline: 3px solid var(--vinho); outline-offset: 10px; border-radius: 12px; }
+  @keyframes boiar { from { translate: 0 -5px; } to { translate: 0 5px; } }
+  .envelope.aberto { animation-play-state: paused; }
+
+  .env-fundo { position: absolute; inset: 0; border-radius: 10px; background: #b92f58; }
+  .env-carta {
+    position: absolute; left: 7%; right: 7%; top: 8%; height: 84%; z-index: 2;
+    border-radius: 6px; background: var(--creme);
+    display: grid; place-items: center; align-content: center; gap: 8px;
+    transition: transform .8s cubic-bezier(.2,.8,.2,1) .35s;
+  }
+  .env-carta i { display: block; height: 3px; border-radius: 3px; background: var(--rosa-claro); }
+  .env-carta i:nth-of-type(1) { width: 62%; }
+  .env-carta i:nth-of-type(2) { width: 48%; }
+  .env-carta i:nth-of-type(3) { width: 56%; }
+  .env-frente {
+    position: absolute; inset: 0; z-index: 3; border-radius: 10px;
+    background: linear-gradient(180deg, #ea5f86 0%, #d63f6b 100%);
+    clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
+  }
+  .env-aba {
+    position: absolute; left: 0; right: 0; top: 0; height: 57%; z-index: 4;
+    border-radius: 10px 10px 0 0;
+    background: linear-gradient(180deg, #f27d9b 0%, #e5587f 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top;
+    transition: transform .6s ease, z-index 0s .3s;
+  }
+  .env-selo {
+    position: absolute; left: 50%; top: 54%; z-index: 5;
+    width: 50px; height: 50px; margin: -25px 0 0 -25px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: radial-gradient(circle at 34% 28%, #a52b52, var(--vinho) 70%);
+    box-shadow: 0 3px 8px rgba(0,0,0,.28), 0 0 0 3px rgba(122,31,61,.25);
+    transition: opacity .3s, transform .3s;
+  }
+  .envelope.aberto .env-aba   { transform: rotateX(180deg); z-index: 1; }
+  .envelope.aberto .env-carta { transform: translateY(-50%); }
+  .envelope.aberto .env-selo  { opacity: 0; transform: scale(.5); }
+
+  .toque {
+    margin: 0; font-size: .9rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--vinho); opacity: .75;
+    animation: pulsar 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes pulsar { from { opacity: .35; } to { opacity: .85; } }
+
+  /* ---------- Botões ---------- */
+  .btn {
+    font: inherit; font-weight: 700; font-size: 1.1rem;
+    border: 0; border-radius: 999px; cursor: pointer;
+    padding: 15px 34px; min-width: 124px;
+    touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  }
+  .btn-sim {
+    --escala: 1;
+    color: #fff;
+    background: linear-gradient(180deg, #ee6a8f 0%, var(--rosa-forte) 100%);
+    box-shadow: 0 12px 24px -8px rgba(209, 58, 104, .7), 0 1px 0 rgba(255,255,255,.35) inset;
+    transform: scale(var(--escala));
+    transition: transform .35s cubic-bezier(.3,1.6,.5,1), box-shadow .2s;
+    animation: bater 1.5s ease-in-out infinite;
+  }
+  .btn-sim:hover { box-shadow: 0 16px 30px -8px rgba(209, 58, 104, .85), 0 1px 0 rgba(255,255,255,.35) inset; }
+  .btn-sim:active { transform: scale(calc(var(--escala) * .96)); }
+  @keyframes bater {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.08); }
+  }
+  .btn-nao {
+    color: var(--tinta-suave); background: #fff;
+    box-shadow: 0 0 0 2px var(--rosa-claro) inset, 0 6px 14px -8px rgba(var(--sombra), .4);
+  }
+  .btn-nao.solto {
+    position: fixed; z-index: 50; margin: 0;
+    transition: left .38s cubic-bezier(.2,.9,.3,1.2), top .38s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .btn:focus-visible { outline: 3px solid var(--vinho); outline-offset: 3px; }
+
+  .escolha {
+    margin-top: 30px;
+    display: flex; justify-content: center; align-items: center; gap: 18px; flex-wrap: wrap;
+    min-height: 64px;
+  }
+  .dica { min-height: 1.6em; margin: 20px 0 0; font-size: .95rem; color: var(--tinta-suave); font-style: italic; }
+
+  .assinatura {
+    margin: 22px 0 0; font-family: "Great Vibes", cursive; font-size: 1.7rem; color: var(--vinho);
+  }
+
+  /* ---------- Tela 3: agendar ---------- */
+  .passo { margin-top: 26px; text-align: left; }
+  .passo-titulo {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 12px;
+    font-family: "Playfair Display", serif; font-style: italic; font-weight: 600; font-size: 1.15rem;
+    color: var(--vinho);
+  }
+  .passo-titulo b {
+    flex: none; width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center;
+    font: 700 .85rem "Nunito", sans-serif; color: #fff; background: var(--rosa);
+  }
+
+  .calendario { background: #fff; border-radius: 20px; padding: 14px 12px 12px; box-shadow: 0 0 0 1px var(--rosa-claro) inset; }
+  .cal-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-mes { display: inline-block; font-weight: 700; color: var(--vinho); }
+  .cal-mes::first-letter { text-transform: uppercase; }
+  .cal-nav {
+    width: 38px; height: 38px; border-radius: 50%; border: 0; cursor: pointer;
+    background: var(--rosa-nevoa); color: var(--vinho); font-size: 1.2rem; line-height: 1;
+  }
+  .cal-nav:disabled { opacity: .3; cursor: default; }
+  .cal-semana, .cal-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-semana span { text-align: center; font-size: .72rem; font-weight: 700; color: var(--tinta-suave); padding: 4px 0; }
+  .dia {
+    aspect-ratio: 1; width: 100%; border: 0; border-radius: 50%; cursor: pointer;
+    font: 600 .95rem "Nunito", sans-serif; color: var(--tinta); background: none;
+    font-variant-numeric: tabular-nums;
+    transition: background .15s, transform .15s;
+  }
+  @media (hover: hover) {
+    .dia:hover:not(:disabled):not([aria-pressed="true"]) { background: var(--rosa-nevoa); }
+    .hora:hover:not([aria-pressed="true"]) { background: var(--rosa-nevoa); }
+  }
+  .dia.hoje { box-shadow: 0 0 0 1.5px var(--rosa) inset; }
+  .dia:disabled { color: #d9c3ca; cursor: default; }
+  .dia[aria-pressed="true"] {
+    color: #fff; background: var(--rosa-forte); transform: scale(1.08);
+    box-shadow: 0 6px 12px -4px rgba(209, 58, 104, .7);
+  }
+
+  .horas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .hora {
+    padding: 11px 0; border: 0; border-radius: 14px; cursor: pointer;
+    font: 700 .95rem "Nunito", sans-serif; color: var(--vinho); background: #fff;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 0 0 1px var(--rosa-claro) inset;
+    transition: background .15s, color .15s, transform .15s;
+  }
+  .hora[aria-pressed="true"] { color: #fff; background: var(--rosa-forte); box-shadow: 0 6px 12px -4px rgba(209, 58, 104, .7); transform: translateY(-1px); }
+  .outra-hora {
+    margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    font-size: .95rem; color: var(--tinta-suave);
+  }
+  .outra-hora input {
+    font: 700 1rem "Nunito", sans-serif; color: var(--vinho);
+    border: 0; border-radius: 14px; padding: 10px 12px; background: #fff;
+    box-shadow: 0 0 0 1px var(--rosa-claro) inset;
+  }
+  .outra-hora input:focus { outline: 2px solid var(--rosa); }
+
+  .surpresa {
+    display: flex; gap: 12px; align-items: center;
+    padding: 14px 16px; border-radius: 18px;
+    background: linear-gradient(135deg, #fff 0%, var(--rosa-nevoa) 100%);
+    box-shadow: 0 0 0 1px var(--rosa-claro) inset;
+    color: var(--tinta);
+  }
+  .surpresa span { font-size: 1.6rem; }
+  .surpresa p { margin: 0; font-size: .97rem; }
+
+  .resumo { min-height: 3.1em; margin: 24px 0 14px; text-align: center; color: var(--tinta-suave); font-size: .98rem; }
+  .resumo strong { color: var(--vinho); }
+  .btn-largo { width: 100%; }
+  .btn-sim:disabled { opacity: .45; cursor: not-allowed; animation: none; box-shadow: none; }
+
+  /* ---------- Tela 4: convite ---------- */
+  .convite {
+    margin-top: 24px; padding: 22px 18px;
+    border-radius: 22px; background: #fff;
+    border: 2px dashed #f2b6c6;
+  }
+  .convite dl { margin: 0; display: grid; gap: 16px; }
+  .convite dt {
+    font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--dourado);
+  }
+  .convite dd {
+    margin: 3px 0 0;
+    font-family: "Playfair Display", serif; font-style: italic; font-weight: 600; font-size: 1.3rem;
+    color: var(--vinho); text-wrap: balance;
+  }
+  .convite dd::first-letter { text-transform: uppercase; }
+  .divisor { display: flex; align-items: center; gap: 10px; margin: 2px 0; color: var(--rosa); }
+  .divisor::before, .divisor::after { content: ""; flex: 1; height: 1px; background: var(--rosa-claro); }
+
+  .btn-zap {
+    display: block; text-decoration: none; margin-top: 22px;
+  }
+  .link {
+    margin-top: 14px; padding: 8px; border: 0; background: none; cursor: pointer;
+    font: 600 .92rem "Nunito", sans-serif; color: var(--tinta-suave); text-decoration: underline; text-underline-offset: 3px;
+  }
+
+  .confete { position: fixed; z-index: 60; pointer-events: none; left: 0; top: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flutua, .flutua svg, .envelope, .toque, .btn-sim { animation: none !important; }
+    .tela.ativa > * { animation-duration: .01s; }
+  }
+</style>
+</head>
+
+<body>
+<div class="ceu" id="ceu" aria-hidden="true"></div>
+
+<!-- 1 · Envelope -->
+<main class="tela ativa" id="tela-envelope">
+  <div class="abertura">
+    <div>
+      <p class="para">Uma cartinha para</p>
+      <span class="nome" data-nome>Thaynara</span>
+    </div>
+    <button class="envelope" id="envelope" aria-label="Abrir a carta">
+      <span class="env-fundo"></span>
+      <span class="env-carta">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#e0527a" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <i></i><i></i><i></i>
+      </span>
+      <span class="env-frente"></span>
+      <span class="env-aba"></span>
+      <span class="env-selo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ffd9e2" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </span>
+    </button>
+    <p class="toque">toque para abrir</p>
+  </div>
+</main>
+
+<!-- 2 · A pergunta -->
+<main class="tela" id="tela-pergunta">
+  <div class="cartao">
+    <p class="sobrescrito">Faz um tempo que eu quero te perguntar…</p>
+    <span class="nome" data-nome>Thaynara</span>
+    <h1>quer sair comigo?</h1>
+    <div class="escolha" id="escolha">
+      <button class="btn btn-sim" id="sim">Sim 💕</button>
+      <button class="btn btn-nao" id="nao">Não</button>
+    </div>
+    <p class="dica" id="dica" aria-live="polite"></p>
+    <p class="assinatura" id="assinatura" hidden></p>
+  </div>
+</main>
+
+<!-- 3 · Agendar -->
+<main class="tela" id="tela-agendar">
+  <div class="cartao">
+    <p class="sobrescrito">Você acabou de deixar meu dia mais bonito</p>
+    <h2>Agora é só escolher quando</h2>
+    <p class="apoio">Você decide o dia e a hora. O resto fica comigo.</p>
+
+    <section class="passo">
+      <h3 class="passo-titulo"><b>1</b> Que dia fica bom pra você?</h3>
+      <div class="calendario">
+        <div class="cal-topo">
+          <button class="cal-nav" id="mes-antes" aria-label="Mês anterior">‹</button>
+          <span class="cal-mes" id="cal-mes" aria-live="polite"></span>
+          <button class="cal-nav" id="mes-depois" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="cal-semana" aria-hidden="true">
+          <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+        </div>
+        <div class="cal-grade" id="cal-grade"></div>
+      </div>
+    </section>
+
+    <section class="passo">
+      <h3 class="passo-titulo"><b>2</b> E que horas?</h3>
+      <div class="horas" id="horas"></div>
+      <label class="outra-hora">
+        ou outro horário
+        <input type="time" id="outra-hora">
+      </label>
+    </section>
+
+    <section class="passo">
+      <h3 class="passo-titulo"><b>3</b> E o lugar?</h3>
+      <div class="surpresa">
+        <span aria-hidden="true">🤫</span>
+        <p>É surpresa. Esse eu escolho com todo o carinho — você só precisa aparecer.</p>
+      </div>
+    </section>
+
+    <p class="resumo" id="resumo" aria-live="polite"></p>
+    <button class="btn btn-sim btn-largo" id="confirmar" disabled>Marcar nosso encontro</button>
+  </div>
+</main>
+
+<!-- 4 · Convite -->
+<main class="tela" id="tela-convite">
+  <div class="cartao">
+    <p class="sobrescrito">Está marcado</p>
+    <h2>Nosso encontro</h2>
+    <div class="convite">
+      <dl>
+        <div><dt>Quando</dt><dd id="c-dia"></dd></div>
+        <div class="divisor" aria-hidden="true">♥</div>
+        <div><dt>Horário</dt><dd id="c-hora"></dd></div>
+        <div class="divisor" aria-hidden="true">♥</div>
+        <div><dt>Onde</dt><dd>Surpresa — deixa comigo</dd></div>
+      </dl>
+    </div>
+    <p class="apoio">Falta só um toque: me manda a confirmação pra eu começar a contar os dias.</p>
+    <a class="btn btn-sim btn-largo btn-zap" id="zap" target="_blank" rel="noopener">Enviar pelo WhatsApp 💌</a>
+    <button class="link" id="trocar">Trocar o dia ou o horário</button>
+  </div>
+</main>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const CORACAO = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+  const CORES = ["#e0527a", "#f27d9b", "#ffffff", "#d13a68", "#ffb3c6"];
+  const sorteio = (min, max) => min + Math.random() * (max - min);
+  const poucoMovimento = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const svgCoracao = (tamanho, cor) =>
+    `<svg width="${tamanho}" height="${tamanho}" viewBox="0 0 24 24" fill="${cor}"><path d="${CORACAO}"/></svg>`;
+
+  /* ----- Textos com o nome ----- */
+  document.querySelectorAll("[data-nome]").forEach((el) => (el.textContent = CONFIG.nomeDela));
+  if (CONFIG.seuNome) {
+    const a = $("#assinatura");
+    a.textContent = "— " + CONFIG.seuNome;
+    a.hidden = false;
+  }
+
+  /* ----- Corações de fundo ----- */
+  const ceu = $("#ceu");
+  const quantos = innerWidth < 600 ? 14 : 24;
+  for (let i = 0; i < quantos; i++) {
+    const c = document.createElement("span");
+    c.className = "flutua";
+    const duracao = sorteio(11, 22);
+    c.style.left = sorteio(0, 96) + "%";
+    if (poucoMovimento) c.style.bottom = sorteio(2, 94) + "%"; // sem animação: corações parados, espalhados
+    c.style.opacity = sorteio(0.25, 0.7).toFixed(2);
+    c.style.animationDuration = duracao + "s";
+    c.style.animationDelay = -sorteio(0, duracao) + "s";
+    c.innerHTML = svgCoracao(Math.round(sorteio(12, 34)), CORES[i % CORES.length]);
+    c.firstChild.style.animationDuration = sorteio(2.5, 5) + "s";
+    ceu.appendChild(c);
+  }
+
+  /* ----- Troca de telas ----- */
+  let telaAtual = "tela-envelope";
+  function mostrar(id) {
+    telaAtual = id;
+    document.querySelectorAll(".tela").forEach((t) => t.classList.toggle("ativa", t.id === id));
+    scrollTo(0, 0);
+  }
+
+  /* ----- 1 · Envelope ----- */
+  const envelope = $("#envelope");
+  envelope.addEventListener("click", () => {
+    if (envelope.classList.contains("aberto")) return;
+    envelope.classList.add("aberto");
+    $(".toque").style.visibility = "hidden";
+    setTimeout(() => mostrar("tela-pergunta"), poucoMovimento ? 300 : 1500);
+  });
+
+  /* ----- 2 · Sim / Não ----- */
+  const btnSim = $("#sim");
+  const btnNao = $("#nao");
+  const dica = $("#dica");
+  const DICAS = [
+    "Ops… o botão escorregou 🙈",
+    "Tem certeza? Pensa com carinho…",
+    "Esse botão é tímido, não gosta de ser clicado.",
+    "O “Sim” tá logo ali, ó 👉",
+    "Persistente você, hein? Gostei.",
+    "Prometo que vai ser legal 🥺",
+    "Ele não vai deixar, já vou avisando.",
+    "Posso ficar nisso o dia inteiro 😄",
+  ];
+  const ROTULOS = ["Não", "Certeza?", "Mesmo?", "Pensa bem…", "Quase!", "Não vale", "Desiste 😄"];
+
+  let tentativas = 0;
+  let solto = false;
+  let ultimoPulo = 0;
+  let ponteiro = null;
+
+  function fugir(forcar) {
+    if (telaAtual !== "tela-pergunta") return;
+    const agora = performance.now();
+    if (!forcar && agora - ultimoPulo < 320) return;
+    ultimoPulo = agora;
+
+    if (!solto) {
+      // Tira o botão do cartão (deixando um espaço no lugar) para ele poder correr pela tela toda
+      const r = btnNao.getBoundingClientRect();
+      const lugar = document.createElement("span");
+      lugar.style.cssText = `flex:none;width:${r.width}px;height:${r.height}px;transition:width .45s ease,margin .45s ease`;
+      btnNao.replaceWith(lugar);
+      lugar.getBoundingClientRect();
+      lugar.style.width = "0px";         // o espaço fecha e o "Sim" desliza para o centro
+      lugar.style.marginLeft = "-18px";  // compensa o gap do flex
+      document.body.appendChild(btnNao);
+      btnNao.classList.add("solto");
+      btnNao.style.left = r.left + "px";
+      btnNao.style.top = r.top + "px";
+      btnNao.getBoundingClientRect(); // garante que a primeira corrida seja animada
+      solto = true;
+    }
+
+    tentativas++;
+    btnNao.textContent = ROTULOS[Math.min(tentativas, ROTULOS.length - 1)];
+    dica.textContent = DICAS[(tentativas - 1) % DICAS.length];
+    btnSim.style.setProperty("--escala", Math.min(1 + tentativas * 0.06, 1.36));
+
+    const margem = 14;
+    const w = btnNao.offsetWidth, h = btnNao.offsetHeight;
+    const maxX = Math.max(margem, innerWidth - w - margem);
+    const maxY = Math.max(margem, innerHeight - h - margem);
+    const sim = btnSim.getBoundingClientRect();
+    const atual = btnNao.getBoundingClientRect();
+    let x, y, ok, voltas = 0;
+    do {
+      x = sorteio(margem, maxX);
+      y = sorteio(margem, maxY);
+      const cx = x + w / 2, cy = y + h / 2;
+      const folga = 40;
+      const emCimaDoSim = x < sim.right + folga && x + w > sim.left - folga && y < sim.bottom + folga && y + h > sim.top - folga;
+      const pertoDoDedo = ponteiro && Math.hypot(cx - ponteiro.x, cy - ponteiro.y) < 150;
+      const quaseNoMesmoLugar = Math.hypot(x - atual.left, y - atual.top) < 110;
+      ok = !emCimaDoSim && !pertoDoDedo && !quaseNoMesmoLugar;
+    } while (!ok && ++voltas < 60);
+    btnNao.style.left = x + "px";
+    btnNao.style.top = y + "px";
+  }
+
+  // Mouse chegando perto
+  document.addEventListener("pointermove", (e) => {
+    if (telaAtual !== "tela-pergunta" || e.pointerType !== "mouse") return;
+    ponteiro = { x: e.clientX, y: e.clientY };
+    const r = btnNao.getBoundingClientRect();
+    const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
+    const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+    if (Math.hypot(dx, dy) < 56) fugir(false);
+  });
+  // Dedo (ou clique) em cima do botão
+  btnNao.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    ponteiro = { x: e.clientX, y: e.clientY };
+    fugir(true);
+  });
+  btnNao.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+  btnNao.addEventListener("click", (e) => { e.preventDefault(); fugir(false); });
+  btnNao.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fugir(true); }
+  });
+  addEventListener("resize", () => { if (solto) fugir(true); });
+
+  btnSim.addEventListener("click", () => {
+    const r = btnSim.getBoundingClientRect();
+    chuvaDeCoracoes(r.left + r.width / 2, r.top + r.height / 2);
+    btnNao.remove();
+    mostrar("tela-agendar");
+  });
+
+  function chuvaDeCoracoes(x, y) {
+    if (poucoMovimento || !document.body.animate) return;
+    for (let i = 0; i < 46; i++) {
+      const c = document.createElement("span");
+      c.className = "confete";
+      c.innerHTML = svgCoracao(Math.round(sorteio(14, 34)), CORES[i % CORES.length]);
+      document.body.appendChild(c);
+      const angulo = sorteio(0, Math.PI * 2);
+      const forca = sorteio(90, Math.max(innerWidth, innerHeight) * 0.55);
+      const dx = Math.cos(angulo) * forca;
+      const dy = Math.sin(angulo) * forca - 80;
+      c.animate(
+        [
+          { transform: `translate(${x}px, ${y}px) scale(.3) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(${x + dx * 0.8}px, ${y + dy * 0.8}px) scale(1) rotate(${sorteio(-90, 90)}deg)`, opacity: 1, offset: 0.55 },
+          { transform: `translate(${x + dx}px, ${y + dy + 160}px) scale(.8) rotate(${sorteio(-180, 180)}deg)`, opacity: 0 },
+        ],
+        { duration: sorteio(1300, 2300), easing: "cubic-bezier(.15,.7,.3,1)" }
+      ).onfinish = () => c.remove();
+    }
+  }
+
+  /* ----- 3 · Dia e hora ----- */
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const primeiroMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const ultimoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 6, 1);
+  let mesVisto = new Date(primeiroMes);
+  let diaEscolhido = null;
+  let horaEscolhida = null;
+
+  const grade = $("#cal-grade");
+  function desenharCalendario() {
+    const ano = mesVisto.getFullYear(), mes = mesVisto.getMonth();
+    $("#cal-mes").textContent = mesVisto.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    $("#mes-antes").disabled = mesVisto <= primeiroMes;
+    $("#mes-depois").disabled = mesVisto >= ultimoMes;
+    grade.innerHTML = "";
+    for (let i = 0; i < mesVisto.getDay(); i++) grade.appendChild(document.createElement("span"));
+    const dias = new Date(ano, mes + 1, 0).getDate();
+    for (let d = 1; d <= dias; d++) {
+      const data = new Date(ano, mes, d);
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "dia";
+      b.textContent = d;
+      b.disabled = data < hoje;
+      if (+data === +hoje) b.classList.add("hoje");
+      b.setAttribute("aria-label", data.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" }));
+      b.setAttribute("aria-pressed", diaEscolhido && +data === +diaEscolhido ? "true" : "false");
+      b.addEventListener("click", () => { diaEscolhido = data; desenharCalendario(); atualizarResumo(); });
+      grade.appendChild(b);
+    }
+  }
+  $("#mes-antes").addEventListener("click", () => { mesVisto.setMonth(mesVisto.getMonth() - 1); desenharCalendario(); });
+  $("#mes-depois").addEventListener("click", () => { mesVisto.setMonth(mesVisto.getMonth() + 1); desenharCalendario(); });
+
+  const horas = $("#horas");
+  const outraHora = $("#outra-hora");
+  CONFIG.horarios.forEach((h) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "hora";
+    b.textContent = h;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => { outraHora.value = ""; escolherHora(h); });
+    horas.appendChild(b);
+  });
+  outraHora.addEventListener("input", () => escolherHora(outraHora.value || null));
+
+  function escolherHora(h) {
+    horaEscolhida = h;
+    horas.querySelectorAll(".hora").forEach((b) => b.setAttribute("aria-pressed", b.textContent === h ? "true" : "false"));
+    atualizarResumo();
+  }
+
+  const textoDia = () => diaEscolhido.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+
+  function jaPassou() {
+    if (!diaEscolhido || !horaEscolhida) return false;
+    const [h, m] = horaEscolhida.split(":").map(Number);
+    const quando = new Date(diaEscolhido); quando.setHours(h, m, 0, 0);
+    return quando <= new Date();
+  }
+
+  function atualizarResumo() {
+    const resumo = $("#resumo");
+    const pronto = diaEscolhido && horaEscolhida && !jaPassou();
+    $("#confirmar").disabled = !pronto;
+    if (!diaEscolhido && !horaEscolhida) resumo.textContent = "Escolhe um dia e um horário 💭";
+    else if (!diaEscolhido) resumo.innerHTML = `Às <strong>${horaEscolhida}</strong>… mas de que dia?`;
+    else if (!horaEscolhida) resumo.innerHTML = `<strong>${textoDia()}</strong>… e que horas?`;
+    else if (jaPassou()) resumo.textContent = "Esse horário já passou 😅 Escolhe outro?";
+    else resumo.innerHTML = `Então fica assim:<br><strong>${textoDia()}, às ${horaEscolhida}</strong>`;
+  }
+
+  desenharCalendario();
+  atualizarResumo();
+
+  /* ----- 4 · Convite ----- */
+  $("#confirmar").addEventListener("click", () => {
+    if (!diaEscolhido || !horaEscolhida || jaPassou()) return;
+    $("#c-dia").textContent = textoDia();
+    $("#c-hora").textContent = horaEscolhida;
+
+    const saudacao = CONFIG.seuNome ? `Oi, ${CONFIG.seuNome}! 💌` : "Oi! 💌";
+    const mensagem =
+      `${saudacao}\nEu aceito sair com você 💕\n\n` +
+      `📅 ${textoDia()}\n⏰ ${horaEscolhida}\n📍 O lugar é surpresa — tá por sua conta!\n\n` +
+      `— ${CONFIG.nomeDela}`;
+    const numero = String(CONFIG.whatsapp || "").replace(/\D/g, "");
+    $("#zap").href = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+
+    mostrar("tela-convite");
+    chuvaDeCoracoes(innerWidth / 2, innerHeight * 0.4);
+  });
+  $("#trocar").addEventListener("click", () => mostrar("tela-agendar"));
+})();
+</script>
+</body>
+</html>
