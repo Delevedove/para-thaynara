@@ -349,10 +349,6 @@ const CONFIG = {
 
   .confete { position: fixed; z-index: 60; pointer-events: none; left: 0; top: 0; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .flutua, .flutua svg, .envelope, .toque, .btn-sim { animation: none !important; }
-    .tela.ativa > * { animation-duration: .01s; }
-  }
 </style>
 </head>
 
@@ -467,7 +463,6 @@ const CONFIG = {
   const CORACAO = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
   const CORES = ["#e0527a", "#f27d9b", "#ffffff", "#d13a68", "#ffb3c6"];
   const sorteio = (min, max) => min + Math.random() * (max - min);
-  const poucoMovimento = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const svgCoracao = (tamanho, cor) =>
     `<svg width="${tamanho}" height="${tamanho}" viewBox="0 0 24 24" fill="${cor}"><path d="${CORACAO}"/></svg>`;
@@ -488,7 +483,6 @@ const CONFIG = {
     c.className = "flutua";
     const duracao = sorteio(11, 22);
     c.style.left = sorteio(0, 96) + "%";
-    if (poucoMovimento) c.style.bottom = sorteio(2, 94) + "%"; // sem animação: corações parados, espalhados
     c.style.opacity = sorteio(0.25, 0.7).toFixed(2);
     c.style.animationDuration = duracao + "s";
     c.style.animationDelay = -sorteio(0, duracao) + "s";
@@ -511,7 +505,7 @@ const CONFIG = {
     if (envelope.classList.contains("aberto")) return;
     envelope.classList.add("aberto");
     $(".toque").style.visibility = "hidden";
-    setTimeout(() => mostrar("tela-pergunta"), poucoMovimento ? 300 : 1500);
+    setTimeout(() => mostrar("tela-pergunta"), 1500);
   });
 
   /* ----- 2 · Sim / Não ----- */
@@ -629,7 +623,7 @@ const CONFIG = {
   });
 
   function chuvaDeCoracoes(x, y) {
-    if (poucoMovimento || !document.body.animate) return;
+    if (!document.body.animate) return;
     for (let i = 0; i < 46; i++) {
       const c = document.createElement("span");
       c.className = "confete";
