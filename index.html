@@ -30,6 +30,9 @@ const CONFIG = {
   // Plano B: só aparece se o aviso automático falhar (ex.: sem internet).
   // Seu WhatsApp com código do país + DDD, só números. Ex.: "5511999998888"
   whatsapp: "",
+
+  // Horários sugeridos (ela também pode digitar outro)
+  horarios: ["12:00", "15:00", "17:00", "18:30", "19:00", "19:30", "20:00", "21:00"],
 };
 </script>
 
@@ -272,6 +275,7 @@ const CONFIG = {
   }
   @media (hover: hover) {
     .dia:hover:not(:disabled):not([aria-pressed="true"]) { background: var(--rosa-nevoa); }
+    .hora:hover:not([aria-pressed="true"]) { background: var(--rosa-nevoa); }
   }
   .dia.hoje { box-shadow: 0 0 0 1.5px var(--rosa) inset; }
   .dia:disabled { color: #d9c3ca; cursor: default; }
@@ -279,6 +283,26 @@ const CONFIG = {
     color: #fff; background: var(--rosa-forte); transform: scale(1.08);
     box-shadow: 0 6px 12px -4px rgba(209, 58, 104, .7);
   }
+
+  .horas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .hora {
+    padding: 11px 0; border: 0; border-radius: 14px; cursor: pointer;
+    font: 700 .95rem "Nunito", sans-serif; color: var(--vinho); background: #fff;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 0 0 1px var(--rosa-claro) inset;
+    transition: background .15s, color .15s, transform .15s;
+  }
+  .hora[aria-pressed="true"] { color: #fff; background: var(--rosa-forte); box-shadow: 0 6px 12px -4px rgba(209, 58, 104, .7); transform: translateY(-1px); }
+  .outra-hora {
+    margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    font-size: .95rem; color: var(--tinta-suave);
+  }
+  .outra-hora input {
+    font: 700 1rem "Nunito", sans-serif; color: var(--vinho);
+    border: 0; border-radius: 14px; padding: 10px 12px; background: #fff;
+    box-shadow: 0 0 0 1px var(--rosa-claro) inset;
+  }
+  .outra-hora input:focus { outline: 2px solid var(--rosa); }
 
   .surpresa {
     display: flex; gap: 12px; align-items: center;
@@ -377,8 +401,8 @@ const CONFIG = {
 <main class="tela" id="tela-agendar">
   <div class="cartao">
     <p class="sobrescrito">Você acabou de deixar meu dia melhor</p>
-    <h2>Agora é só escolher o dia</h2>
-    <p class="apoio">Você decide o dia. O resto fica comigo.</p>
+    <h2>Agora é só escolher quando</h2>
+    <p class="apoio">Você decide o dia e a hora. O resto fica comigo.</p>
 
     <section class="passo">
       <h3 class="passo-titulo"><b>1</b> Que dia fica bom pra você?</h3>
@@ -396,10 +420,19 @@ const CONFIG = {
     </section>
 
     <section class="passo">
-      <h3 class="passo-titulo"><b>2</b> E o resto?</h3>
+      <h3 class="passo-titulo"><b>2</b> E que horas?</h3>
+      <div class="horas" id="horas"></div>
+      <label class="outra-hora">
+        ou outro horário
+        <input type="time" id="outra-hora">
+      </label>
+    </section>
+
+    <section class="passo">
+      <h3 class="passo-titulo"><b>3</b> E o lugar?</h3>
       <div class="surpresa">
         <span aria-hidden="true">🤫</span>
-        <p>Horário e lugar são surpresa, escolhidos com todo o carinho. Você só precisa estar pronta, que eu passo pra te buscar.</p>
+        <p>É surpresa, escolhido com todo o carinho. Você só precisa estar pronta, que eu passo pra te buscar.</p>
       </div>
     </section>
 
@@ -417,14 +450,14 @@ const CONFIG = {
       <dl>
         <div><dt>Quando</dt><dd id="c-dia"></dd></div>
         <div class="divisor" aria-hidden="true">♥</div>
-        <div><dt>Horário e lugar</dt><dd>Surpresa — deixa comigo</dd></div>
+        <div><dt>Horário</dt><dd id="c-hora"></dd></div>
         <div class="divisor" aria-hidden="true">♥</div>
-        <div><dt>Você só precisa</dt><dd>Estar pronta, que eu passo pra te buscar</dd></div>
+        <div><dt>Onde</dt><dd>Surpresa — eu passo pra te buscar</dd></div>
       </dl>
     </div>
     <p class="apoio" id="status" aria-live="polite"></p>
     <a class="btn btn-sim btn-largo btn-zap" id="zap" target="_blank" rel="noopener" hidden>Enviar pelo WhatsApp 💌</a>
-    <button class="link" id="trocar">Trocar o dia</button>
+    <button class="link" id="trocar">Trocar o dia ou o horário</button>
   </div>
 </main>
 
@@ -588,7 +621,7 @@ const CONFIG = {
   btnSim.addEventListener("click", () => {
     const fugas = tentativas === 0 ? "Nem tentou clicar no “Não” 🥰"
       : `Tentou clicar no “Não” ${tentativas}x antes 😄`;
-    avisar(`${CONFIG.nomeDela} disse SIM! 💕`, `${fugas}\nAgora ela está escolhendo o dia…`, ["heart"]);
+    avisar(`${CONFIG.nomeDela} disse SIM! 💕`, `${fugas}\nAgora ela está escolhendo o dia e o horário…`, ["heart"]);
     const r = btnSim.getBoundingClientRect();
     chuvaDeCoracoes(r.left + r.width / 2, r.top + r.height / 2);
     btnNao.remove();
@@ -617,12 +650,13 @@ const CONFIG = {
     }
   }
 
-  /* ----- 3 · Dia ----- */
+  /* ----- 3 · Dia e hora ----- */
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const primeiroMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
   const ultimoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 6, 1);
   let mesVisto = new Date(primeiroMes);
   let diaEscolhido = null;
+  let horaEscolhida = null;
   let confirmacoes = 0;
 
   const grade = $("#cal-grade");
@@ -653,11 +687,40 @@ const CONFIG = {
 
   const textoDia = () => diaEscolhido.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 
+  const horas = $("#horas");
+  const outraHora = $("#outra-hora");
+  CONFIG.horarios.forEach((h) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "hora";
+    b.textContent = h;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => { outraHora.value = ""; escolherHora(h); });
+    horas.appendChild(b);
+  });
+  outraHora.addEventListener("input", () => escolherHora(outraHora.value || null));
+
+  function escolherHora(h) {
+    horaEscolhida = h;
+    horas.querySelectorAll(".hora").forEach((b) => b.setAttribute("aria-pressed", b.textContent === h ? "true" : "false"));
+    atualizarResumo();
+  }
+
+  function jaPassou() {
+    if (!diaEscolhido || !horaEscolhida) return false;
+    const [h, m] = horaEscolhida.split(":").map(Number);
+    const quando = new Date(diaEscolhido); quando.setHours(h, m, 0, 0);
+    return quando <= new Date();
+  }
+
   function atualizarResumo() {
     const resumo = $("#resumo");
-    $("#confirmar").disabled = !diaEscolhido;
-    if (!diaEscolhido) resumo.textContent = "Escolhe um dia no calendário 💭";
-    else resumo.innerHTML = `Então fica marcado:<br><strong>${textoDia()}</strong>`;
+    $("#confirmar").disabled = !(diaEscolhido && horaEscolhida && !jaPassou());
+    if (!diaEscolhido && !horaEscolhida) resumo.textContent = "Escolhe um dia e um horário 💭";
+    else if (!diaEscolhido) resumo.innerHTML = `Às <strong>${horaEscolhida}</strong>… mas de que dia?`;
+    else if (!horaEscolhida) resumo.innerHTML = `<strong>${textoDia()}</strong>… e que horas?`;
+    else if (jaPassou()) resumo.textContent = "Esse horário já passou 😅 Escolhe outro?";
+    else resumo.innerHTML = `Então fica marcado:<br><strong>${textoDia()}, às ${horaEscolhida}</strong>`;
   }
 
   desenharCalendario();
@@ -665,9 +728,10 @@ const CONFIG = {
 
   /* ----- 4 · Convite ----- */
   $("#confirmar").addEventListener("click", () => {
-    if (!diaEscolhido) return;
+    if (!diaEscolhido || !horaEscolhida || jaPassou()) return;
     const dia = textoDia();
     $("#c-dia").textContent = dia;
+    $("#c-hora").textContent = horaEscolhida;
 
     const status = $("#status");
     const zap = $("#zap");
@@ -677,14 +741,14 @@ const CONFIG = {
     const saudacao = CONFIG.seuNome ? `Oi, ${CONFIG.seuNome}! 💌` : "Oi! 💌";
     const mensagem =
       `${saudacao}\nEu aceito sair com você 💕\n\n` +
-      `📅 ${dia}\n📍 Horário e lugar: surpresa — vou estar pronta pra você me buscar!\n\n` +
+      `📅 ${dia}\n⏰ ${horaEscolhida}\n📍 O lugar é surpresa — vou estar pronta pra você me buscar!\n\n` +
       `— ${CONFIG.nomeDela}`;
     const numero = String(CONFIG.whatsapp || "").replace(/\D/g, "");
     zap.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
 
     confirmacoes++;
-    const titulo = confirmacoes === 1 ? "Encontro marcado! 📅" : "Ela trocou o dia 🔁";
-    avisar(titulo, `${CONFIG.nomeDela} escolheu: ${dia}.\nAgora é com você: horário e lugar 😉`, ["calendar", "heart"])
+    const titulo = confirmacoes === 1 ? "Encontro marcado! 📅" : "Ela trocou o dia ou o horário 🔁";
+    avisar(titulo, `${CONFIG.nomeDela} escolheu: ${dia}, às ${horaEscolhida}.\nAgora é com você: o lugar 😉`, ["calendar", "heart"])
       .then((ok) => {
         if (ok) {
           status.textContent = "Pronto, sua resposta já chegou até mim. Agora é só contar os dias 💕";
